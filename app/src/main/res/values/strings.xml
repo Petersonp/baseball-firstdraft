@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">12FixedFirstDraft</string>
+    <string name="pos_prompt">Field Position</string>
+    <string-array name="pos_array">
+        <item>P</item>
+        <item>C</item>
+        <item>FB</item>
+        <item>SB</item>
+        <item>TB</item>
+        <item>SS</item>
+        <item>LF</item>
+        <item>CF</item>
+        <item>RF</item>
+    </string-array>
+</resources>
+
