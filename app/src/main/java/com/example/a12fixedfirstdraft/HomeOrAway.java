@@ -28,7 +28,7 @@ public class HomeOrAway extends GameActivity {
         btnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isHome = true;
+                setHome(true);
                 returnResult("Home");
             }
         });
@@ -37,7 +37,7 @@ public class HomeOrAway extends GameActivity {
         btnAway.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isHome = false;
+                setHome(false);
                 returnResult("Away");
             }
         });

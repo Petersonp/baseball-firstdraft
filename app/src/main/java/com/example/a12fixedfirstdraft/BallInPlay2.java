@@ -18,6 +18,7 @@ public class BallInPlay2 extends GameActivity {
     Button btnDouble;
     Button btnTriple;
     Button btnInParkHomeRun;
+    Button btnHomeRun;
     String title;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +35,18 @@ public class BallInPlay2 extends GameActivity {
         int height = displayMetrics.heightPixels;
         getWindow().setLayout((int)(width*0.8),(int)(height*0.8));
 
+        //views
         lblBallInPlay2 = (TextView) findViewById(R.id.lblBallInPlay2);
+        btnBack = (Button) findViewById(R.id.btnBack);
+        btnOut = (Button) findViewById(R.id.btnOut);
+        btnSingle = (Button) findViewById(R.id.btnSingle);
+        btnDouble = (Button) findViewById(R.id.btnDouble);
+        btnTriple = (Button) findViewById(R.id.btnTriple);
+        btnInParkHomeRun = (Button) findViewById(R.id.btnInParkHomeRun);
+        btnHomeRun = (Button) findViewById(R.id.btnHomeRun);
+
         lblBallInPlay2.setText(title);
 
-        btnBack = (Button) findViewById(R.id.btnBack);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,7 +56,6 @@ public class BallInPlay2 extends GameActivity {
             }
         });
 
-        btnOut = (Button) findViewById(R.id.btnOut);
         btnOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,7 +64,6 @@ public class BallInPlay2 extends GameActivity {
             }
         });
 
-        btnSingle = (Button) findViewById(R.id.btnSingle);
         btnSingle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,7 +72,6 @@ public class BallInPlay2 extends GameActivity {
             }
         });
 
-        btnDouble = (Button) findViewById(R.id.btnDouble);
         btnDouble.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,7 +80,6 @@ public class BallInPlay2 extends GameActivity {
             }
         });
 
-        btnTriple = (Button) findViewById(R.id.btnTriple);
         btnTriple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,12 +88,17 @@ public class BallInPlay2 extends GameActivity {
             }
         });
 
-        btnInParkHomeRun = (Button) findViewById(R.id.btnInParkHomeRun);
         btnInParkHomeRun.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                returnResult("In-The-Park Home Run");
+            public void onClick(View v) { returnResult("In-The-Park Home Run");
 
+            }
+        });
+
+        btnHomeRun.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnResult("Home Run");
             }
         });
     }

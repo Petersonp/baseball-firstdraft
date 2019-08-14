@@ -13,23 +13,27 @@ public class BattingStats {
     private double BBK;
     private double OPS;
 
+    //sac flies
     public void addSF(){
         SF++;
     }
+    public String getSF() { return String.valueOf(SF); }
 
     public void addHits() {
         hits++;
     }
+    public String getHits() { return String.valueOf(hits); }
 
     // at bats
     public void addAB() {
         AB++;
     }
-
+    public String getAB() { return String.valueOf(AB); }
     // walks
     public void addBB() {
         BB++;
     }
+    public String getBB() { return String.valueOf(BB); }
 
     // hit by pitch
     public void addHBP() {
@@ -42,23 +46,54 @@ public class BattingStats {
     }
 
     // total bases
-    public void addTB() {
-        TB++;
+    public void addTB(int i) {
+        TB+=i;
     }
 
-    public double getBA() {
-        return hits/AB;
+
+
+    public String getBA() {
+        if (AB == 0){
+            return "--";
+        }
+        return String.valueOf((double)(hits/AB));
     }
 
-    public double getOBP() {
-        return (hits+BB+HBP)/(AB+BB+HBP+SF);
+    public String getOBP() {
+        if((AB+BB+ HBP +SF) == 0){
+            return "--";
+        }
+        return String.valueOf((double)((hits+BB+ HBP)/(AB+BB+ HBP +SF)));
     }
 
-    public double getBBK() {
-        return BB/K;
+    public String getBBK() {
+        if (K == 0){
+            return "--";
+        }
+        return String.valueOf((double)(BB/ K));
     }
 
-    public double getOPS() {
-        return ((hits+BB+HBP)/(AB+BB+HBP+SF))+(TB/AB);
+    public String getOPS() {
+        if (AB == 0){
+            return "--";
+        }
+        else if ((AB+BB+ HBP +SF)+(TB /AB)==0){
+            return "--";
+        }
+        return String.valueOf((double)(((hits+BB+ HBP)/(AB+BB+ HBP +SF))+(HBP /AB)));
+    }
+
+
+    // DELETE THESE AFTER TESTING
+    public String getHBP() {
+        return String.valueOf(HBP);
+    }
+
+    public String getK() {
+        return String.valueOf(K);
+    }
+
+    public String getTB() {
+        return String.valueOf(TB);
     }
 }

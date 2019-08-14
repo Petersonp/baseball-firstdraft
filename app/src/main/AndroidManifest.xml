@@ -67,6 +67,16 @@
             android:screenOrientation="landscape">
 
         </activity>
+        <activity android:name=".Stats"
+            android:theme="@style/AppTheme.GameActivity.Stats"
+            android:screenOrientation="landscape">
+
+        </activity>
+        <activity android:name=".SubPlayer"
+            android:theme="@style/AppTheme.NewActivity"
+            android:screenOrientation="landscape">
+
+        </activity>
 
     </application>
 

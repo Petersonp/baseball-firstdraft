@@ -28,7 +28,13 @@ public class BallInPlay extends GameActivity {
         int height = displayMetrics.heightPixels;
         getWindow().setLayout((int)(width*0.8),(int)(height*0.8));
 
+        //views
         btnBack = (Button) findViewById(R.id.btnBack);
+        btnGroundBall = (Button) findViewById(R.id.btnGroundBall);
+        btnBunt = (Button) findViewById(R.id.btnBunt);
+        btnLineDrive = (Button) findViewById(R.id.btnLineDrive);
+        btnPopFly = (Button) findViewById(R.id.btnPopFly);
+
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -38,7 +44,6 @@ public class BallInPlay extends GameActivity {
             }
         });
 
-        btnGroundBall = (Button) findViewById(R.id.btnGroundBall);
         btnGroundBall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,7 +52,6 @@ public class BallInPlay extends GameActivity {
             }
         });
 
-        btnBunt = (Button) findViewById(R.id.btnBunt);
         btnBunt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,7 +60,6 @@ public class BallInPlay extends GameActivity {
             }
         });
 
-        btnLineDrive = (Button) findViewById(R.id.btnLineDrive);
         btnLineDrive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,20 +68,11 @@ public class BallInPlay extends GameActivity {
             }
         });
 
-        btnPopFly = (Button) findViewById(R.id.btnPopFly);
         btnPopFly.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 nextPopUp(btnPopFly.getText().toString());
 
-            }
-        });
-
-        btnFoulBall = (Button) findViewById(R.id.btnFoulBall);
-        btnFoulBall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nextPopUp(btnFoulBall.getText().toString());
             }
         });
     }

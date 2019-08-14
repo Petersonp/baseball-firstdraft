@@ -16,6 +16,11 @@ public class Pitch extends GameActivity {
     Button btnBallInPlay;
     Button btnStrike;
     Button btnBall;
+    Button btnHitByPitch;
+    Button btnCatcherInterference;
+    Button btnIntentionalWalk;
+    Button btnBalk;
+    Button btnFoulBall;
     TextView lblPitch;
 
     @Override
@@ -29,7 +34,16 @@ public class Pitch extends GameActivity {
         int height = displayMetrics.heightPixels;
         getWindow().setLayout((int)(width*0.8),(int)(height*0.8));
 
+        //views
         btnBallInPlay = (Button) findViewById(R.id.btnBallInPlay);
+        btnStrike = (Button) findViewById(R.id.btnStrike);
+        btnBall = (Button) findViewById(R.id.btnBall);
+        btnHitByPitch = (Button) findViewById(R.id.btnHitByPitch);
+        btnCatcherInterference = (Button) findViewById(R.id.btnCatcherInterference);
+        btnIntentionalWalk = (Button) findViewById(R.id.btnIntentionalWalk);
+        btnBalk = (Button) findViewById(R.id.btnBalk);
+        btnFoulBall = (Button) findViewById(R.id.btnFoulBall);
+
         btnBallInPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,7 +53,7 @@ public class Pitch extends GameActivity {
             }
         });
 
-        btnStrike = (Button) findViewById(R.id.btnStrike);
+
         btnStrike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,11 +61,44 @@ public class Pitch extends GameActivity {
             }
         });
 
-        btnBall = (Button) findViewById(R.id.btnBall);
+
         btnBall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 returnResult("Ball");
+            }
+        });
+
+        btnHitByPitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnResult("Hit By Pitch");
+            }
+        });
+
+        btnCatcherInterference.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { returnResult("Catcher Interference");
+            }
+        });
+
+        btnIntentionalWalk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { returnResult("Intentional Walk");
+            }
+        });
+
+        btnBalk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnResult("Balk");
+            }
+        });
+
+        btnFoulBall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnResult("Foul Ball");
             }
         });
     }
@@ -86,4 +133,5 @@ public class Pitch extends GameActivity {
     public static String[] getResultKeyMessage(Intent intent){
         return intent.getStringArrayExtra(RESULT_KEY_MESSAGE);
     }
+
 }

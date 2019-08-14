@@ -33,7 +33,7 @@ public class AddFromRoster extends GameActivity {
 
         //Setting views
         btnAddPlayer = (Button) findViewById(R.id.btnAddPlayer);
-        tblAddFromRoster = (TableLayout) findViewById(R.id.tblAddFromRoster);
+        tblAddFromRoster = (TableLayout) findViewById(R.id.tblStats);
 
         //Setting header
         TableRow header = new TableRow(getApplicationContext());

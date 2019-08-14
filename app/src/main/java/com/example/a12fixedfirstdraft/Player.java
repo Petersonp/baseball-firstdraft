@@ -6,9 +6,9 @@ public class Player {
     private String playerNumber;
     private int gamesPlayed;
     //RunningStats runningStats;
-    BattingStats battingStats;
+    BattingStats battingStats = new BattingStats();
     //FieldingStats fieldingStats;
-    PitchingStats pitchingStats;
+    PitchingStats pitchingStats = new PitchingStats();
 
     public String getFirstName() {
         return firstName;

@@ -49,7 +49,7 @@ public class LineUp extends GameActivity {
         btnAdd = (Button) findViewById(R.id.btnAdd);
         btnBack = (Button) findViewById(R.id.btnBack);
         btnContinue = (Button) findViewById(R.id.btnContinue);
-        tblLineUp = (TableLayout) findViewById(R.id.tblAddFromRoster);
+        tblLineUp = (TableLayout) findViewById(R.id.tblStats);
         lblError = (TextView) findViewById(R.id.lblError);
         btnPrint = (Button) findViewById(R.id.btnPrint);
 
@@ -155,6 +155,7 @@ public class LineUp extends GameActivity {
 
             }
         }
+
     }
 
     protected void createLineUp1(){
@@ -272,9 +273,9 @@ public class LineUp extends GameActivity {
                 i.putExtra(RESULT_KEY_MESSAGE,result);
                 setResult(Activity.RESULT_OK,i);
                 //setValues();
-                printOrder();
+                //printOrder();
                 createLineUp();
-                printLineUp();
+                //printLineUp();
                 finish();
             }
         }

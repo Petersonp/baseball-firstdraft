@@ -37,7 +37,7 @@ public class Roster extends StartingWindow {
         setContentView(R.layout.roster_layout);
 
         //setting views
-        tblRoster = (TableLayout) findViewById(R.id.tblAddFromRoster);
+        tblRoster = (TableLayout) findViewById(R.id.tblStats);
         btnNewPlayer = (Button) findViewById(R.id.btnNewPlayer);
         btnBack = (Button) findViewById(R.id.btnBack);
 
