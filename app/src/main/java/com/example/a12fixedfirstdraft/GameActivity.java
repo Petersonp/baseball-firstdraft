@@ -305,10 +305,13 @@ public class GameActivity extends AppCompatActivity {
     protected void substituteActivity(PlayerNode player){
         pause("SUBSTITUTING ACTIVITY");
         System.out.println(player.data.getFirstName()+" "+player.data.getLastName()+" @"+player.positon);
-        Intent i = new Intent(getApplicationContext(),BallInPlay2.class);
+        Intent i = new Intent(getApplicationContext(),SubPlayer.class);
         Bundle bundle = new Bundle();
-        String[] stuff = {player.positon,player.data.getFirstName(),player.data.getLastName()};
-        bundle.putStringArray("Position",stuff);
+        String[] stuff = new String[3];
+        stuff[0] = player.data.getFirstName();
+        stuff[1] = player.data.getLastName();
+        stuff[2] = player.positon;
+        bundle.putStringArray("Position",new String[]{player.data.getFirstName(),player.data.getLastName(),player.positon});
         i.putExtras(bundle);
         startActivityForResult(i, REQUEST_CODE_SUBPLAYER);
 
@@ -337,15 +340,25 @@ public class GameActivity extends AppCompatActivity {
         pause("LOADING FIELDING POSITION NODES");
         PlayerNode tmp = tmpHead;
         for (int i = 0; i < positions.length;i++){
-            if (tmp.positon.equals(positions[i])){
-                positionNodes[i] = tmp;
-                break;
+            if(tmp.positon!=null) {
+                if (tmp.positon.equals(positions[i])) {
+                    System.out.println(tmp.positon+" is the position of: "+tmp.data.getFirstName()+" "+tmp.data.getLastName());
+                    positionNodes[i] = tmp;
+                    break;
+                }
+            }else{
+                System.out.println(tmp.data.getFirstName()+" "+tmp.data.getLastName()+" has no position");
             }
         }
         while (tmp.next != null){
             for (int i = 0; i < positions.length;i++){
-                if (tmp.next.positon.equals(positions[i])){
-                    positionNodes[i] = tmp.next;
+                if(tmp.next.positon!=null) {
+                    if (tmp.next.positon.equals(positions[i])) {
+                        System.out.println(tmp.next.positon+" is the position of: "+tmp.next.data.getFirstName()+" "+tmp.next.data.getLastName());
+                        positionNodes[i] = tmp.next;
+                    }
+                }else{
+                    System.out.println(tmp.next.data.getFirstName()+" "+tmp.next.data.getLastName()+" has no position");
                 }
             }
             tmp = tmp.next;
@@ -569,6 +582,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     protected void printLineUp(){
+        pause("PRINTING LINEUP");
         PlayerNode tmp = getStarter();
         System.out.println(tmp.order+": "+tmp.data.getFirstName()+" "+tmp.data.getLastName()+" #"+tmp.data.getPlayerNumber()+" @"+tmp.positon+" ----");
         for (int i =0;i<8;i++){
@@ -781,19 +795,7 @@ public class GameActivity extends AppCompatActivity {
         //System.out.println(rightField.data.getFirstName()+" "+rightField.data.getLastName()+" rightField");
     }
 
-    protected void createPositionNodes(){
-        PlayerNode[] tmpPosNodes = new PlayerNode[9];
-        tmpPosNodes[0] = pitcher;
-        tmpPosNodes[1] = catcher;
-        tmpPosNodes[2] = firstBase;
-        tmpPosNodes[3] = secondBase;
-        tmpPosNodes[4] = thirdBase;
-        tmpPosNodes[5] = shortStop;
-        tmpPosNodes[6] = rightField;
-        tmpPosNodes[7] = centerField;
-        tmpPosNodes[8] = leftField;
 
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -974,9 +976,109 @@ public class GameActivity extends AppCompatActivity {
                 updateGameInfo();
                 push();
             }
+        }else if (requestCode == REQUEST_CODE_SUBPLAYER){
+            if (resultCode == Activity.RESULT_OK){
+                String[] result = SubPlayer.getResultKeyMessage(data);
+                switchPlayer(result[0],result[1],result[2],result[3],result[4],result[5]);
+                printLineUp();
+                loadFieldingPositionNodes(getStarter());
+                printPositionNodes();
+                loadFieldingButtons();
+                System.out.println("final one v");
+                printLineUp();
+            }else{
+                System.out.println("Cancelled subplayer");
+            }
         }
 
+    }
+
+    protected void switchPlayer(String fn, String ln, String no, String ofn, String oln, String ono){
+        printLineUp();
+        PlayerNode tmp = getStarter();
+        PlayerNode newPlayer = findPlayer(ofn,oln,ono);
+        if (newPlayer.isChecked) {
+            System.out.println("NEW PLAYER IS CHECKED");
+            System.out.println("Comparing: "+fn+ln+no+": to: "+tmp.data.getFirstName()+tmp.data.getLastName()+tmp.data.getPlayerNumber());
+            if (fn.equals(tmp.data.getFirstName()) && ln.equals(tmp.data.getLastName()) && no.equals(tmp.data.getPlayerNumber())) {
+                int tmpOrder = newPlayer.order;
+                newPlayer.order = tmp.order;
+                tmp.order = tmpOrder;
+
+                String tmpPos = newPlayer.positon;
+                newPlayer.positon = tmp.positon;
+                tmp.positon = tmpPos;
+                /*
+                newPlayer.next = tmp.next;
+                setStarter(newPlayer);
+                */
+            } else {
+                while (tmp.next != null) {
+                    System.out.println("Comparing: "+fn+ln+no+": to: "+tmp.next.data.getFirstName()+tmp.next.data.getLastName()+tmp.next.positon);
+                    if (fn.equals(tmp.next.data.getFirstName()) && ln.equals(tmp.next.data.getLastName()) && no.equals(tmp.next.positon)) {
+                        pause("FOUND^");
+                        int tmpOrder = newPlayer.order;
+                        newPlayer.order = tmp.next.order;
+                        tmp.next.order = tmpOrder;
+
+                        String tmpPos = newPlayer.positon;
+                        newPlayer.positon = tmp.next.positon;
+                        tmp.next.positon = tmpPos;
+
+                        /*
+                        newPlayer.next = tmp.next.next;
+                        tmp.next = newPlayer;
+                        */
+                    }
+                    tmp = tmp.next;
+                }
+            }
+        }else{
+            System.out.println("PLAYER IS NOT IN THE ROSTER");
+            if (fn.equals(tmp.data.getFirstName()) && ln.equals(tmp.data.getLastName()) && no.equals(tmp.positon)) {
+                newPlayer.positon = tmp.positon;
+                newPlayer.order = tmp.order;
+                tmp.isChecked = false;
+                tmp.positon = null;
+                tmp.order = 0;
+                newPlayer.next = tmp.next;
+                setStarter(newPlayer);
+            } else {
+                while (tmp.next != null) {
+                    System.out.println("Comparing: "+fn+ln+no+": to: "+tmp.next.data.getFirstName()+tmp.next.data.getLastName()+tmp.next.positon+" 4");
+                    if (fn.equals(tmp.next.data.getFirstName()) && ln.equals(tmp.next.data.getLastName()) && no.equals(tmp.next.positon)) {
+                        pause("FOUND^");
+                        newPlayer.positon = tmp.next.positon;
+                        newPlayer.order = tmp.next.order;
+                        tmp.next.isChecked = false;
+                        tmp.next.positon = null;
+                        tmp.next.order = 0;
+                        newPlayer.next = tmp.next.next;
+                        tmp.next = newPlayer;
+                        break;
+                    }
+                    tmp = tmp.next;
+                }
+            }
         }
+    }
+
+
+    protected PlayerNode findPlayer(String fn, String ln, String no){
+        PlayerNode tmp = getHead();
+        if (fn.equals(tmp.data.getFirstName())&&ln.equals(tmp.data.getLastName())&&no.equals(tmp.data.getPlayerNumber())){
+            return tmp;
+        }
+        while (tmp.next != null){
+            if (fn.equals(tmp.next.data.getFirstName())&&ln.equals(tmp.next.data.getLastName())&&no.equals(tmp.next.data.getPlayerNumber())){
+                return tmp.next;
+            }
+            tmp = tmp.next;
+        }
+        return tmp;
+    }
+
+
 
     protected void loadBattingPositionNodes(PlayerNode head){
         pause("Loading Batting Position Nodes");

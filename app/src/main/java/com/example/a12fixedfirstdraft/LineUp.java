@@ -306,8 +306,9 @@ public class LineUp extends GameActivity {
     }
 
     protected int getSpinnerPos(String pos){
-        System.out.println("CHECKING SPINNERPOS");
+        pause("CHECKING SPINNERPOS");
         for (int i =0; i < positions.length;i++){
+            System.out.println("CHECKING IF: "+pos+" == "+positions[i]);
             if (pos.equals(positions[i].toString())){
                 System.out.println(pos+" == "+ positions[i]);
                 return i;
