@@ -35,6 +35,7 @@ public class Roster extends StartingWindow {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.roster_layout);
+        pause("OPENING ROSTER");
 
         //setting views
         tblRoster = (TableLayout) findViewById(R.id.tblStats);
@@ -54,6 +55,7 @@ public class Roster extends StartingWindow {
             headTmp.setPadding(50,0,50,0);
             header.addView(headTmp);
         }
+
         tblRoster.addView(header);
 
 
@@ -109,6 +111,7 @@ public class Roster extends StartingWindow {
     }
 
     protected void loadTable(){
+        pause("LOADING TABLE");
         if (getHead() == null){
             System.out.println("HEAD IS NULL");
             return;
@@ -120,6 +123,7 @@ public class Roster extends StartingWindow {
             addTableRow(id,msg);
             count++;
             while (tmp.next!= null){
+                System.out.println("TMP.NEXT");
                 int[] ids = {index_id+count, first_id+count, last_id+count, number_id+count, edit_id+count, remove_id+count, row_id+count};
                 String[] msgs = {String.valueOf(count+1),tmp.next.data.getFirstName(),tmp.next.data.getLastName(),tmp.next.data.getPlayerNumber()};
                 addTableRow(ids,msgs);
@@ -315,6 +319,7 @@ public class Roster extends StartingWindow {
     protected void addPlayerNode(Player player, int index){
         PlayerNode newPlayer = new PlayerNode();
         newPlayer.data = player;
+        newPlayer.team = "Bearcats";
         System.out.println(index+ " IS THE INDEX FOR THE NEW PLAYERNODE");
         newPlayer.index = index;
         System.out.println(newPlayer.index + " IS THE INDEX OF THE NEW PLAYER");
@@ -322,6 +327,7 @@ public class Roster extends StartingWindow {
         System.out.println(tmp32.index + " IS THE INDEX OF COPY NEWPLAYER");
         if (getHead() == null){
             setHead(newPlayer);
+            db.addPlayer(newPlayer.data);
             System.out.println(getHead().index+ " THIS IS THE INDEX OF THE HEAD NODE");
         }else{
             PlayerNode tmp = getHead();
@@ -329,6 +335,7 @@ public class Roster extends StartingWindow {
                 tmp = tmp.next;
             }
             tmp.next = newPlayer;
+            db.addPlayer(newPlayer.data);
             System.out.println(tmp.next.index + " THIS IS THE INDEX OF "+tmp.next.data.getFirstName());
         }
         printIndex();

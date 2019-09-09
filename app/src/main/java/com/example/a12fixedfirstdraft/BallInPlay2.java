@@ -38,10 +38,10 @@ public class BallInPlay2 extends GameActivity {
         //views
         lblBallInPlay2 = (TextView) findViewById(R.id.lblBallInPlay2);
         btnBack = (Button) findViewById(R.id.btnBack);
-        btnOut = (Button) findViewById(R.id.btnOut);
+        btnOut = (Button) findViewById(R.id.btnSub);
         btnSingle = (Button) findViewById(R.id.btnSingle);
         btnDouble = (Button) findViewById(R.id.btnDouble);
-        btnTriple = (Button) findViewById(R.id.btnTriple);
+        btnTriple = (Button) findViewById(R.id.btnStealOut);
         btnInParkHomeRun = (Button) findViewById(R.id.btnInParkHomeRun);
         btnHomeRun = (Button) findViewById(R.id.btnHomeRun);
 

@@ -5,6 +5,10 @@ public class Game {
     private PlayerNode lineup;
     private PlayerNode otherLineup;
 
+    private PlayerNode[] rosterArray;
+    private PlayerNode[] lineupArray;
+    private PlayerNode[] otherLineUpArray;
+
     private int strikes;
     private int balls;
     private int inning;
@@ -193,5 +197,29 @@ public class Game {
 
     public void setRightField(PlayerNode rightField) {
         this.rightField = rightField;
+    }
+
+    public PlayerNode[] getRosterArray() {
+        return rosterArray;
+    }
+
+    public void setRosterArray(PlayerNode[] rosterArray) {
+        this.rosterArray = rosterArray;
+    }
+
+    public PlayerNode[] getOtherLineUpArray() {
+        return otherLineUpArray;
+    }
+
+    public void setOtherLineUpArray(PlayerNode[] otherLineUpArray) {
+        this.otherLineUpArray = otherLineUpArray;
+    }
+
+    public PlayerNode[] getLineupArray() {
+        return lineupArray;
+    }
+
+    public void setLineupArray(PlayerNode[] lineupArray) {
+        this.lineupArray = lineupArray;
     }
 }

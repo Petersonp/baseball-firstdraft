@@ -20,6 +20,19 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <View
+        android:id="@+id/viewInfo"
+        android:layout_width="300dp"
+        android:layout_height="413dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:background="#ECBA71"
+        app:layout_constraintBottom_toBottomOf="@+id/viewField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
         android:id="@+id/viewInfield"
         android:layout_width="287dp"
         android:layout_height="286dp"
@@ -131,8 +144,8 @@
 
     <TextView
         android:id="@+id/lblAtBat"
-        android:layout_width="104dp"
-        android:layout_height="19dp"
+        android:layout_width="143dp"
+        android:layout_height="20dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
@@ -140,11 +153,11 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
         android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/viewField"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.795"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblGameInfo"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/viewInfo"
+        app:layout_constraintTop_toBottomOf="@+id/lblScores"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
@@ -172,10 +185,10 @@
         android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.843"
+        app:layout_constraintHorizontal_bias="0.947"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.198" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/btnPitcher"
@@ -358,7 +371,7 @@
 
     <TextView
         android:id="@+id/lblGameInfo"
-        android:layout_width="236dp"
+        android:layout_width="0dp"
         android:layout_height="34dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
@@ -371,7 +384,7 @@
         app:layout_constraintBottom_toTopOf="@+id/viewField"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/viewInfo"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.12" />
 
@@ -383,14 +396,14 @@
         android:text="Undo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/lblGameInfo"
-        app:layout_constraintHorizontal_bias="0.963"
+        app:layout_constraintHorizontal_bias="0.019"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.006" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/lblOnDeck"
-        android:layout_width="104dp"
+        android:layout_width="0dp"
         android:layout_height="19dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
@@ -399,30 +412,31 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
         android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/viewField"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblGameInfo"
+        app:layout_constraintHorizontal_bias="0.986"
+        app:layout_constraintStart_toEndOf="@+id/lblAtBat"
+        app:layout_constraintTop_toBottomOf="@+id/lblScores"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/btnStats"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="78dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Stats"
+        android:text="View Stats"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.854"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.524" />
+        app:layout_constraintHorizontal_bias="0.687"
+        app:layout_constraintStart_toStartOf="@+id/viewInfo"
+        app:layout_constraintTop_toBottomOf="@+id/lblOnDeck"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/btnPrintBatters"
@@ -437,7 +451,61 @@
         android:text="Print Batters"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.071"
         app:layout_constraintStart_toEndOf="@+id/btnRightField"
-        app:layout_constraintTop_toBottomOf="@+id/btnStats" />
+        app:layout_constraintTop_toBottomOf="@+id/btnStats"
+        app:layout_constraintVertical_bias="0.993" />
+
+    <TextView
+        android:id="@+id/lblScores"
+        android:layout_width="0dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="TextView"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/viewInfo"
+        app:layout_constraintTop_toBottomOf="@+id/lblGameInfo"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/btnViewTeam"
+        android:layout_width="0dp"
+        android:layout_height="78dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="View Team"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/viewInfo"
+        app:layout_constraintTop_toBottomOf="@+id/btnStats"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/btnDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Delete Database"
+        app:layout_constraintBottom_toTopOf="@+id/btnPrintBatters"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/viewInfo"
+        app:layout_constraintTop_toBottomOf="@+id/btnViewTeam" />
 
 </android.support.constraint.ConstraintLayout>

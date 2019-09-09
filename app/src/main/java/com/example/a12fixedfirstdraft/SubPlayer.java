@@ -98,36 +98,38 @@ public class SubPlayer extends GameActivity {
         count =0;
     }
 
+
     protected void updateTable(String playerType){
         switch (playerType){
             case ("ROSTER"):
+                printRoster();
                 String[] RHeaders = {"First Name","Last Name","#","Substitute"};
-                addTableRow(RHeaders,true);
+                addTableRowforRoster(RHeaders,true);
                 PlayerNode tmp = getHead();
                 String[] RPlayers = {tmp.data.getFirstName(),tmp.data.getLastName(),tmp.data.getPlayerNumber()};
                 if(!(tmp.data.getFirstName().equals(player[0])) && (tmp.isChecked == false)) {
-                    addTableRow(RPlayers, false);
+                    addTableRowforRoster(RPlayers, false);
                 }
                 while (tmp.next != null){
                     String[] RPlayers1 = {tmp.next.data.getFirstName(),tmp.next.data.getLastName(),tmp.next.data.getPlayerNumber()};
                     if(!(tmp.next.data.getFirstName().equals(player[0])) && (tmp.next.isChecked == false)) {
-                        addTableRow(RPlayers1, false);
+                        addTableRowforRoster(RPlayers1, false);
                     }
                     tmp=tmp.next;
                 }
                 break;
             case ("POSITIONS"):
                 String[] PHeaders = {"First Name","Last Name","#","Pos","Substitute"};
-                addTableRow(PHeaders,true);
+                addTableRowforPositions(PHeaders,true);
                 PlayerNode tmp1 = getStarter();
                 String[] PPlayers = {tmp1.data.getFirstName(),tmp1.data.getLastName(),tmp1.data.getPlayerNumber(),tmp1.positon};
                 if(!(tmp1.data.getFirstName().equals(player[0])) && (tmp1.isChecked == true)) {
-                    addTableRow(PPlayers, false);
+                    addTableRowforPositions(PPlayers, false);
                 }
                 while(tmp1.next != null){
                     String[] PPlayers1 = {tmp1.next.data.getFirstName(),tmp1.next.data.getLastName(),tmp1.next.data.getPlayerNumber(),tmp1.next.positon};
                     if(!(tmp1.next.data.getFirstName().equals(player[0])) && (tmp1.next.isChecked == true)) {
-                        addTableRow(PPlayers1, false);
+                        addTableRowforPositions(PPlayers1, false);
                     }
                     tmp1=tmp1.next;
                 }
@@ -146,7 +148,50 @@ public class SubPlayer extends GameActivity {
         System.out.println(s);
     }
 
-    protected void addTableRow(String[] stats,boolean isHeader){
+    protected void addTableRowforPositions(String[] stats,boolean isHeader){
+        pause("Adding Table Row");
+        printArray(stats);
+        TableRow trTmp = new TableRow(getApplicationContext());
+        trTmp.setPadding(30, 0, 10, 0);
+        trTmp.setId(row_id + count);
+        for(int i = 0; i < stats.length;i++){
+            TextView lblTmp = new TextView(getApplicationContext());
+            lblTmp.setText(stats[i]);
+            lblTmp.setLayoutParams(new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
+            lblTmp.setTextSize(20);
+            lblTmp.setPadding(50,0,55,0);
+            pause("COMPARING STATS.LENGTH TO "+i);
+
+            if (stats.length==i+1){
+                System.out.println("SETTING ID OF: "+lblTmp.getText().toString()+": TO: "+(sub_id+count)+" exception");
+                lblTmp.setId(sub_id+count);
+            }else {
+                System.out.println("SETTING ID OF: "+lblTmp.getText().toString()+": TO: "+(ids[i]+count));
+                lblTmp.setId(ids[i] + count);
+            }
+
+
+            trTmp.addView(lblTmp);
+        }
+        if(!isHeader){
+            Button btnTmp = new Button(getApplicationContext());
+            btnTmp.setText("Sub");
+            btnTmp.setId(sub_id+count);
+            System.out.println("SETTING ID OF: "+btnTmp.getText().toString()+": TO: "+(sub_id+count));
+            btnTmp.setPadding(20,0,20,0);
+            trTmp.addView(btnTmp);
+            btnTmp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    returnResult(v);
+                }
+            });
+        }
+        tblStats.addView(trTmp);
+        count++;
+    }
+
+    protected void addTableRowforRoster(String[] stats,boolean isHeader){
         pause("Adding Table Row");
         printArray(stats);
         TableRow trTmp = new TableRow(getApplicationContext());

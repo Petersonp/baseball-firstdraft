@@ -10,10 +10,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class GameActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_GETMESSAGE_STARTINGWINDOW = 5;
     public static final int REQUEST_CODE_GETMESSAGE_PITCH = 6;
     public static final int REQUEST_CODE_SUBPLAYER = 19;
+    public static final int REQUEST_CODE_RUNNER = 99;
     Button btnStart;
     static private PlayerNode head;
     static private PlayerNode starter;
@@ -32,6 +35,8 @@ public class GameActivity extends AppCompatActivity {
     int inning;
     int outs;
     private int count = 0;
+    int points =0;
+    int opoints =0;
 
     GameNode front;
     GameNode base;
@@ -64,23 +69,29 @@ public class GameActivity extends AppCompatActivity {
     Button btnRightField;
     Button btnPitch;
     Button btnStats;
+    Button btnViewTeam;
 
     Button btnFirstRunner;
     Button btnSecondRunner;
     Button btnThirdRunner;
     Button btnBatter;
 
+    Button btnDelete;
+
     Button btnUndo;
 
     TextView lblGameInfo;
     TextView lblAtBat;
     TextView lblOnDeck;
+    TextView lblScores;
 
     PlayerNode[] positionNodes = {pitcher,catcher,firstBase,secondBase,thirdBase,shortStop,leftField,centerField,rightField};
     String[] positions = {"P","C","FB","SB","TB","SS","LF","CF","RF"};
 
     //Button[] positionButtons;
     Button[] positionButtons = new Button[9];
+
+    public DatabaseHandler db = new DatabaseHandler(this);
 
     static private boolean isHome;
     @Override
@@ -132,6 +143,7 @@ public class GameActivity extends AppCompatActivity {
         lblGameInfo = (TextView) findViewById(R.id.lblGameInfo);
         lblAtBat = (TextView) findViewById(R.id.lblAtBat);
         lblOnDeck = (TextView) findViewById(R.id.lblOnDeck);
+        lblScores = (TextView) findViewById(R.id.lblScores);
 
         btnFirstRunner = (Button) findViewById(R.id.btnFirstRunner);
         btnSecondRunner = (Button) findViewById(R.id.btnSecondRunner);
@@ -141,6 +153,9 @@ public class GameActivity extends AppCompatActivity {
         btnUndo = (Button) findViewById(R.id.btnUndo);
         btnStart = (Button) findViewById(R.id.btnStart);
         btnStats = (Button) findViewById(R.id.btnStats);
+        btnViewTeam = (Button) findViewById(R.id.btnViewTeam);
+
+        btnDelete = (Button) findViewById(R.id.btnDelete);
 
 
 
@@ -166,6 +181,13 @@ public class GameActivity extends AppCompatActivity {
                     pause("UNDO");
                     setGame(pop());
                 }
+            }
+        });
+
+        btnViewTeam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                printDatabase();
             }
         });
 
@@ -195,9 +217,13 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        btnFirstBase.setOnClickListener(new View.OnClickListener() {
+        btnFirstRunner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (fbRunner.data != null) {
+                    openRunner(fbRunner);
+                }
+                /*
                 System.out.println("BTNFIRSTBASE PRESSED");
                 if (fbRunner.data != null && fbRunner.next.data == null){
                     fbRunner.next.data = fbRunner.data;
@@ -206,11 +232,16 @@ public class GameActivity extends AppCompatActivity {
                     fbRunner.data = null;
                     push();
                 }
+                */
             }
         });
         btnSecondRunner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (sbRunner.data != null) {
+                    openRunner(sbRunner);
+                }
+                /*
                 if (sbRunner.data != null && sbRunner.next.data == null){
                     sbRunner.next.data = sbRunner.data;
                     sbRunner.next.btn.setText(sbRunner.data.data.getFirstName()+" "+sbRunner.data.data.getLastName());
@@ -219,23 +250,38 @@ public class GameActivity extends AppCompatActivity {
                     push();
 
                 }
+                */
             }
         });
         btnThirdRunner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (tbRunner.data != null) {
+                    openRunner(tbRunner);
+                }
+                /*
+                if (tbRunner.data.team != null){
+                    points++;
+                }else{
+                    opoints++;
+                }
                 if (tbRunner.data != null){
                     tbRunner.data = null;
                     tbRunner.btn.setText("--");
-                    //add points
                     push();
                 }
+                */
+                updateGameInfo();
 
             }
         });
 
 
-        //loadPlayers();
+        //load database
+        deleteDatabase();
+        printDatabase();
+        loadDatabase();
+        printDatabase();
 
         //Substitute players
         btnPitcher.setOnClickListener(new View.OnClickListener() {
@@ -300,6 +346,82 @@ public class GameActivity extends AppCompatActivity {
                 substituteActivity(leftField);
             }
         });
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteDatabase();
+            }
+        });
+
+    }
+    // database work
+    private void loadDatabase(){
+        pause("LOADING DATABASE");
+        PlayerNode tmp;
+        if (db.getPlayerCount()>0){
+            System.out.println("PLAYERCOUNT IS GREATER THAN 0");
+            PlayerNode newNode = new PlayerNode();
+            newNode.data = db.getPlayer(1);
+            newNode.team = "Bearcats";
+            newNode.index = 0;
+            setHead(newNode);
+            tmp = getHead();
+            for (int i = 1; i < db.getPlayerCount();i++){
+                System.out.println("i = "+i);
+                PlayerNode newNode1 = new PlayerNode();
+                newNode1.data = db.getPlayer(i+1);
+                newNode.index = i;
+                newNode1.team = "Bearcats";
+                tmp.next = newNode1;
+                System.out.println("TMP is: "+tmp.data.getFirstName()+" and next is: "+tmp.next);
+                tmp = tmp.next;
+
+            }
+        }
+
+    }
+
+    private void printDatabase(){
+        pause("PRINTING DATABSE");
+        //
+        Player[] players = db.getPlayerArray();
+        System.out.println("players.length = "+players.length);
+        for (int i = 0; i < db.getPlayerCount();i++){
+            System.out.println(i);
+            String log = "Id: " + players[i].getId() + " ,First Name: " + players[i].getFirstName() + " ,Last Name: " +
+                    players[i].getLastName() + " ,Player Number: " + players[i].getPlayerNumber();
+            System.out.println(log);
+        }
+        List<Player> players1 = db.getAllPlayers();
+        System.out.println("players1.size = "+players1.size());
+        for (Player player: players1){
+            String log = "Id: " + player.getId() + " ,First Name: " + player.getFirstName() + " ,Last Name: " +
+                    player.getLastName() + " ,Player Number: " + player.getPlayerNumber();
+            System.out.println(log);
+        }
+    }
+
+    private void deleteDatabase(){
+        List<Player> players = db.getAllPlayers();
+
+        for (Player player: players){
+            db.deletePlayer(player);
+        }
+    }
+     //
+
+
+    protected void openRunner(BatterNode runner){
+        Intent i = new Intent(getApplicationContext(), Runner.class);
+        Bundle bundle = new Bundle();
+        String[] stuff = new String[4];
+        stuff[0] = runner.data.data.getFirstName();
+        stuff[1] = runner.data.data.getLastName();
+        stuff[2] = runner.data.data.getPlayerNumber();
+        stuff[3] = String.valueOf(runner.order);
+        bundle.putStringArray("Runner",stuff);
+        i.putExtras(bundle);
+        startActivityForResult(i, REQUEST_CODE_RUNNER);
     }
 
     protected void substituteActivity(PlayerNode player){
@@ -323,6 +445,8 @@ public class GameActivity extends AppCompatActivity {
         lblGameInfo.setText("I:"+getInning(inning)+" B:"+balls+" S:"+strikes+" O:"+outs);
         lblAtBat.setText("At Bat: "+batter.data.data.getFirstName()+" "+batter.data.data.getLastName());
         lblOnDeck.setText("On Dec: "+onDeck.data.data.getFirstName()+" "+onDeck.data.data.getLastName());
+        lblScores.setText("Bearcats: "+points+" Opponent: "+opoints);
+
     }
 
     private String getInning(int inning){
@@ -342,7 +466,6 @@ public class GameActivity extends AppCompatActivity {
         for (int i = 0; i < positions.length;i++){
             if(tmp.positon!=null) {
                 if (tmp.positon.equals(positions[i])) {
-                    System.out.println(tmp.positon+" is the position of: "+tmp.data.getFirstName()+" "+tmp.data.getLastName());
                     positionNodes[i] = tmp;
                     break;
                 }
@@ -354,16 +477,27 @@ public class GameActivity extends AppCompatActivity {
             for (int i = 0; i < positions.length;i++){
                 if(tmp.next.positon!=null) {
                     if (tmp.next.positon.equals(positions[i])) {
-                        System.out.println(tmp.next.positon+" is the position of: "+tmp.next.data.getFirstName()+" "+tmp.next.data.getLastName());
                         positionNodes[i] = tmp.next;
                     }
-                }else{
-                    System.out.println(tmp.next.data.getFirstName()+" "+tmp.next.data.getLastName()+" has no position");
                 }
             }
             tmp = tmp.next;
         }
         updateNodes(positionNodes);
+    }
+
+    protected int getLength(PlayerNode head){
+        pause("GETTING LENGTH");
+        int count = 0;
+        PlayerNode tmp = head;
+        count++;
+        while(tmp.next!= null){
+            System.out.println("HEAD.NEXT = "+tmp.next.data.getFirstName()+" "+tmp.next.data.getLastName());
+            count++;
+            System.out.println(count);
+            tmp = tmp.next;
+        }
+        return count;
     }
 
     //Linked List
@@ -378,6 +512,28 @@ public class GameActivity extends AppCompatActivity {
         System.out.println("OUTS: "+ g.getOuts());
         g.setInning(inning);
         System.out.println("INNINGS: "+ g.getInning());
+
+        PlayerNode[] roster = new PlayerNode[getLength(getHead())];
+        int count = 0;
+        PlayerNode tmp = getHead();
+        roster[count] = tmp;
+        while(tmp.next != null){
+            count++;
+            roster[count] = tmp.next;
+            tmp = tmp.next;
+            System.out.println(count);
+        }
+        PlayerNode[] lineup = new PlayerNode[getLength(getStarter())];
+        count = 0;
+        tmp = getStarter();
+        lineup[count] = tmp;
+        while(tmp.next != null){
+            count++;
+            lineup[count] = tmp.next;
+            tmp = tmp.next;
+            System.out.println(count);
+        }
+        PlayerNode[] otherLineup = new PlayerNode[getLength(getOtherHead())];
 
         g.setRoster(getHead());
         g.setLineup(getStarter());
@@ -585,10 +741,20 @@ public class GameActivity extends AppCompatActivity {
         pause("PRINTING LINEUP");
         PlayerNode tmp = getStarter();
         System.out.println(tmp.order+": "+tmp.data.getFirstName()+" "+tmp.data.getLastName()+" #"+tmp.data.getPlayerNumber()+" @"+tmp.positon+" ----");
+
+        while(tmp.next!=null){
+            System.out.println("next is: "+tmp.next.order+": "+tmp.next.data.getFirstName()+" "+tmp.next.data.getLastName()+" #"+tmp.next.data.getPlayerNumber()+" @"+tmp.next.positon+" ----");
+            if(tmp.next.isChecked==true) {
+                System.out.println(tmp.next.order + ": " + tmp.next.data.getFirstName() + " " + tmp.next.data.getLastName() + " #" + tmp.next.data.getPlayerNumber() + " @" + tmp.next.positon);
+            }
+            tmp = tmp.next;
+        }
+        /*
         for (int i =0;i<8;i++){
             System.out.println(tmp.next.order+": "+tmp.next.data.getFirstName()+" "+tmp.next.data.getLastName()+" #"+tmp.next.data.getPlayerNumber()+" @"+tmp.next.positon);
             tmp = tmp.next;
-        }
+        }*/
+
     }
     // --------------------------------
     protected void loadFieldingButtons(){
@@ -646,9 +812,15 @@ public class GameActivity extends AppCompatActivity {
         for (int i =0; i< n;i++) {
             pause("Moving Batters");
             if (tbRunner.data != null) {
+                if (tbRunner.data.team != null) {
+                    points++;
+                } else {
+                    opoints++;
+                }
                 //add points
                 tbRunner.data = null;
                 tbRunner.btn.setText("--");
+
             }
             if (sbRunner.data != null) {
                 //System.out.println(tbRunner.data.data.getFirstName() + " Third Base Before");
@@ -745,9 +917,27 @@ public class GameActivity extends AppCompatActivity {
             strikes = 0;
             balls = 0;
             shiftBatters();
+            swapSides();
         }
 
     }
+
+    protected void swapSides(){
+        if (isHome = true){
+            isHome = false;
+            loadFieldingPositionNodes(getOtherHead());
+            printPositionNodes();
+            loadFieldingButtons();
+            loadBattingPositionNodes(getStarter());
+        }else{
+            isHome = true;
+            loadFieldingPositionNodes(getStarter());
+            printPositionNodes();
+            loadFieldingButtons();
+            loadBattingPositionNodes(getOtherHead());
+        }
+    }
+
     //formating output
     public void pause(String s){
         for (int i =0; i< 5;i++){
@@ -887,6 +1077,7 @@ public class GameActivity extends AppCompatActivity {
                         batter.data.data.battingStats.addTB(4);
                         pitcher.data.pitchingStats.addBHR();
                         pitcher.data.pitchingStats.addBH();
+                        moveBatter(4);
                     case ("Strike"):
                         System.out.println("STRIKE IS THE RESULT");
                         pitcher.data.pitchingStats.addS();
@@ -932,9 +1123,6 @@ public class GameActivity extends AppCompatActivity {
                 checkGameInfo();
                 updateGameInfo();
 
-
-
-
             }
         }else if (requestCode == REQUEST_CODE_GETMESSAGE_STARTINGWINDOW){
             if (resultCode == Activity.RESULT_OK) {
@@ -978,6 +1166,7 @@ public class GameActivity extends AppCompatActivity {
             }
         }else if (requestCode == REQUEST_CODE_SUBPLAYER){
             if (resultCode == Activity.RESULT_OK){
+                System.out.println("RESULT IS OK");
                 String[] result = SubPlayer.getResultKeyMessage(data);
                 switchPlayer(result[0],result[1],result[2],result[3],result[4],result[5]);
                 printLineUp();
@@ -986,14 +1175,110 @@ public class GameActivity extends AppCompatActivity {
                 loadFieldingButtons();
                 System.out.println("final one v");
                 printLineUp();
+                printRoster();
             }else{
                 System.out.println("Cancelled subplayer");
+            }
+        }else if (requestCode == REQUEST_CODE_RUNNER){
+            if (resultCode == Activity.RESULT_OK){
+                String[] result = Runner.getResultKeyMessage(data);
+                System.out.println(result[0]+" "+result[1]+" IS THE RESULT --------------------------------------------------------------------");
+                BatterNode tmp = new BatterNode();
+                switch (result[0]){
+                    case ("1"):
+                        tmp = fbRunner;
+                        break;
+                    case ("2"):
+                        tmp = sbRunner;
+                        break;
+                    case ("3"):
+                        tmp = tbRunner;
+                        break;
+                    default:
+                        System.out.println("FIRST SWITCH CASE BUT NO MATCH");
+                        break;
+                }
+                switch (result[1]){
+                    case ("Out"):
+                        System.out.println(tmp.data.data.getFirstName()+" "+tmp.data.data.getLastName()+" IS THE RUNNER IN OUT");
+                        outs++;
+                        tmp.data = null;
+                        tmp.btn.setText("--");
+                        break;
+                    case ("Safe"):
+                        System.out.println(tmp.data.data.getFirstName()+" "+tmp.data.data.getLastName()+" IS THE RUNNER IN SAFE");
+                        tmp.data.data.runningStats.addSA();
+                        tmp.data.data.runningStats.addSS();
+                        if (tmp != tbRunner) {
+                            tmp.next.data = tmp.data;
+                        }else{
+                            if (tbRunner.data.team != null) {
+                                points++;
+                            } else {
+                                opoints++;
+                            }
+                        }
+                        tmp.btn.setText("--");
+                        break;
+                    case ("SOut"):
+                        System.out.println(tmp.data.data.getFirstName()+" "+tmp.data.data.getLastName()+" IS THE RUNNER IN SOUT");
+                        tmp.data.data.runningStats.addSA();
+                        tmp.data = null;
+                        tmp.btn.setText("--");
+                        break;
+                    default:
+                        System.out.println("SECOND SWITCH CASE BUT NO MATCH");
+                        break;
+                }
+                System.out.println("POST SWITCH CASES");
+
+                if (result[0].equals("1")){
+                    tmp = fbRunner;
+                }else if (result[0].equals("2")){
+                    tmp = sbRunner;
+                }else if (result[0].equals("3")){
+                    tmp = tbRunner;
+                }else{
+                    System.out.println("FIRST IF BUT NO MATCH");
+                }
+                if (result[1].equals("Out")){
+                    System.out.println(tmp.data.data.getFirstName()+" "+tmp.data.data.getLastName()+" IS THE RUNNER IN OUT");
+                    outs++;
+                    tmp.data = null;
+                    tmp.btn.setText("--");
+                }else if (result[1].equals("Safe")){
+                    System.out.println(tmp.data.data.getFirstName()+" "+tmp.data.data.getLastName()+" IS THE RUNNER IN SAFE");
+                    tmp.data.data.runningStats.addSA();
+                    tmp.data.data.runningStats.addSS();
+                    if (tmp != tbRunner) {
+                        tmp.next.data = tmp.data;
+                    }else{
+                        if (tbRunner.data.team != null) {
+                            points++;
+                        } else {
+                            opoints++;
+                        }
+                    }
+                    tmp.btn.setText("--");
+                }else if (result[1].equals("SOut")){
+                    System.out.println(tmp.data.data.getFirstName()+" "+tmp.data.data.getLastName()+" IS THE RUNNER IN SOUT");
+                    tmp.data.data.runningStats.addSA();
+                    tmp.data = null;
+                    tmp.btn.setText("--");
+                }else{
+                    System.out.println("SECOND IF BUT NO MATCH");
+                }
+            checkGameInfo();
+            updateGameInfo();
             }
         }
 
     }
 
     protected void switchPlayer(String fn, String ln, String no, String ofn, String oln, String ono){
+        pause("SWITCHING PLAYERS");
+        System.out.println("PLAYER 1 IS: "+fn+ln+no);
+        System.out.println("PLAYER 2 IS: "+ofn+oln+ono);
         printLineUp();
         PlayerNode tmp = getStarter();
         PlayerNode newPlayer = findPlayer(ofn,oln,ono);
@@ -1034,27 +1319,42 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         }else{
-            System.out.println("PLAYER IS NOT IN THE ROSTER");
+            System.out.println("PLAYER IS NOT IN THE LINEUP");
             if (fn.equals(tmp.data.getFirstName()) && ln.equals(tmp.data.getLastName()) && no.equals(tmp.positon)) {
                 newPlayer.positon = tmp.positon;
                 newPlayer.order = tmp.order;
+                newPlayer.isChecked = true;
+                newPlayer.next = tmp.next;
                 tmp.isChecked = false;
                 tmp.positon = null;
                 tmp.order = 0;
-                newPlayer.next = tmp.next;
+                tmp.next = null;
                 setStarter(newPlayer);
             } else {
                 while (tmp.next != null) {
                     System.out.println("Comparing: "+fn+ln+no+": to: "+tmp.next.data.getFirstName()+tmp.next.data.getLastName()+tmp.next.positon+" 4");
                     if (fn.equals(tmp.next.data.getFirstName()) && ln.equals(tmp.next.data.getLastName()) && no.equals(tmp.next.positon)) {
                         pause("FOUND^");
+                        PlayerNode tmp2 = getStarter();
+                        while (!(tmp2.next.data.getFirstName().equals(ofn))){
+                            tmp2 = tmp2.next;
+                        }
+                        System.out.println(tmp2.next.data.getFirstName()+" = "+ofn);
+                        PlayerNode tmp1 = tmp2.next.next;
+                        tmp2.next = tmp.next;
                         newPlayer.positon = tmp.next.positon;
+                        System.out.println("New player position = "+newPlayer.positon);
                         newPlayer.order = tmp.next.order;
+                        System.out.println("New player order = "+newPlayer.order);
+                        newPlayer.isChecked = true;
                         tmp.next.isChecked = false;
                         tmp.next.positon = null;
                         tmp.next.order = 0;
+                        System.out.println("newPlayer.next = "+tmp.next.next.data.getFirstName()+tmp.next.next.data.getLastName());
                         newPlayer.next = tmp.next.next;
                         tmp.next = newPlayer;
+                        tmp2.next.next =tmp1;
+                        System.out.println("tmp.next ="+tmp.next.data.getFirstName()+tmp.next.data.getLastName());
                         break;
                     }
                     tmp = tmp.next;
@@ -1097,6 +1397,19 @@ public class GameActivity extends AppCompatActivity {
             onDeck.data = head.next.designatedHitter;
         }
 
+    }
+
+    public void printRoster(){
+        pause("PRINTING ROSTER");
+        PlayerNode tmp = getHead();
+        System.out.println(tmp.order+": "+tmp.data.getFirstName()+" "+tmp.data.getLastName()+" #"+tmp.data.getPlayerNumber()+" ----");
+        while(tmp.next!=null){
+            System.out.println("next is: "+tmp.next.order+": "+tmp.next.data.getFirstName()+" "+tmp.next.data.getLastName()+" #"+tmp.next.data.getPlayerNumber()+" ----");
+            if(tmp.next.isChecked==true) {
+                System.out.println(tmp.next.order + ": " + tmp.next.data.getFirstName() + " " + tmp.next.data.getLastName() + " #" + tmp.next.data.getPlayerNumber());
+            }
+            tmp = tmp.next;
+        }
     }
 
 

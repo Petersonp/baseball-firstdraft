@@ -5,10 +5,11 @@ public class Player {
     private String lastName;
     private String playerNumber;
     private int gamesPlayed;
-    //RunningStats runningStats;
+    RunningStats runningStats;
     BattingStats battingStats = new BattingStats();
     //FieldingStats fieldingStats;
     PitchingStats pitchingStats = new PitchingStats();
+    private int id;
 
     public String getFirstName() {
         return firstName;
@@ -40,5 +41,13 @@ public class Player {
 
     public void addGamesPlayed() {
         gamesPlayed++;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

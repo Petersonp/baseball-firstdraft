@@ -8,4 +8,5 @@ public class PlayerNode {
     public PlayerNode designatedHitter;
     public String positon;
     public int order;
+    public String team;
 }
