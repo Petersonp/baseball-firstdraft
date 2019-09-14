@@ -9,10 +9,12 @@ public class Game {
     private PlayerNode[] lineupArray;
     private PlayerNode[] otherLineUpArray;
 
+
     private int strikes;
     private int balls;
     private int inning;
     private int outs;
+
 
     private PlayerNode onDeck;
     private PlayerNode batter;
@@ -30,6 +32,8 @@ public class Game {
     private PlayerNode leftField;
     private PlayerNode centerField;
     private PlayerNode rightField;
+
+    private String[][] stats;
 
     public PlayerNode getRoster() {
         return roster;
@@ -221,5 +225,14 @@ public class Game {
 
     public void setLineupArray(PlayerNode[] lineupArray) {
         this.lineupArray = lineupArray;
+    }
+
+
+    public String[][] getStats() {
+        return stats;
+    }
+
+    public void setStats(String[][] stats) {
+        this.stats = stats;
     }
 }

@@ -41,7 +41,7 @@ public class StartingWindow extends GameActivity {
 
     protected void printPlayerNodes(){
         if(getHead() != null) {
-            System.out.println("PRINGINT INDEXES");
+            System.out.println("PRINGINT INDEXES IN STARTIG WINDOW");
             PlayerNode tmp = getHead();
             System.out.println(tmp.data.getFirstName() +" "+tmp.data.getLastName()+": " + tmp.index);
             while (tmp.next != null) {

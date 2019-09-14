@@ -85,8 +85,9 @@ public class Stats extends GameActivity {
     }
 
     protected void updateTable(String statsType){
+        pause("UPADTING TABLE");
         PlayerNode tmp = getHead();
-        System.out.println();
+        System.out.println(tmp.data.pitchingStats.getPIT()+" PIT");
         switch (statsType){
             case (BATTING_STATS):
                 String[] BHeaders = {"Batter Name","BA","BBK","OBP","OPS","SF","BB","AB","Hits","HBP","K","TB"};

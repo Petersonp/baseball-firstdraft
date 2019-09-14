@@ -1,13 +1,13 @@
 package com.example.a12fixedfirstdraft;
 
 public class BattingStats {
-    private int hits;
-    private int AB;
-    private int BB;
-    private int HBP;
-    private int K;
-    private int TB;
-    private int SF;
+    private int hits = 0;
+    private int AB = 0;
+    private int BB = 0;
+    private int HBP = 0;
+    private int K = 0;
+    private int TB = 0;
+    private int SF = 0;
     private double BA;
     private double OBP;
     private double BBK;
@@ -15,39 +15,39 @@ public class BattingStats {
 
     //sac flies
     public void addSF(){
-        SF++;
+        setSF(SF + 1);
     }
     public String getSF() { return String.valueOf(SF); }
 
     public void addHits() {
-        hits++;
+        setHits(hits + 1);
     }
     public String getHits() { return String.valueOf(hits); }
 
     // at bats
     public void addAB() {
-        AB++;
+        setAB(AB + 1);
     }
     public String getAB() { return String.valueOf(AB); }
     // walks
     public void addBB() {
-        BB++;
+        setBB(BB + 1);
     }
     public String getBB() { return String.valueOf(BB); }
 
     // hit by pitch
     public void addHBP() {
-        HBP++;
+        setHBP(HBP + 1);
     }
 
     // strike out
     public void addK() {
-        K++;
+        setK(K + 1);
     }
 
     // total bases
     public void addTB(int i) {
-        TB+=i;
+        setTB(TB + i);
     }
 
 
@@ -95,5 +95,33 @@ public class BattingStats {
 
     public String getTB() {
         return String.valueOf(TB);
+    }
+
+    public void setHits(int hits) {
+        this.hits = hits;
+    }
+
+    public void setAB(int AB) {
+        this.AB = AB;
+    }
+
+    public void setBB(int BB) {
+        this.BB = BB;
+    }
+
+    public void setHBP(int HBP) {
+        this.HBP = HBP;
+    }
+
+    public void setK(int k) {
+        K = k;
+    }
+
+    public void setTB(int TB) {
+        this.TB = TB;
+    }
+
+    public void setSF(int SF) {
+        this.SF = SF;
     }
 }

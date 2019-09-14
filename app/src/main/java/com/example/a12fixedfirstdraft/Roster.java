@@ -11,6 +11,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class Roster extends StartingWindow {
     public static final int REQUEST_CODE_GETMESSAGE_PLAYERINFO = 5;
     public static final String RESULT_KEY_MESSAGE = "com.example.a12fixedfirstdraft.Roster - Return Message";
@@ -74,7 +76,7 @@ public class Roster extends StartingWindow {
             @Override
             public void onClick(View v) {
                 System.out.println("BTN BACK ---------------------------------");
-                printIndex();
+                //printIndex();
                 if(getHead()!= null) {
                     System.out.println("HEAD IS: " + getHead().data.getFirstName() + " " + getHead().data.getLastName() + " #" + getHead().data.getPlayerNumber());
                 }else{
@@ -94,20 +96,40 @@ public class Roster extends StartingWindow {
                     int[] id = {index_id + count, first_id + count, last_id + count, number_id + count, edit_id + count, remove_id + count, row_id + count};
                     String[] msg = {String.valueOf(count + 1), "fn" + String.valueOf(count + 1), "ln" + String.valueOf(count + 1), String.valueOf(count + 1)};
                     addTableRow(id, msg);
-                    System.out.println(count + " COUNT BEFORE------");
                     count++;
-                    System.out.println(count + " COUNT AFTER------");
                     Player player = new Player();
                     player.setFirstName("fn" + String.valueOf(count));
                     player.setLastName("ln" + String.valueOf(count));
                     player.setPlayerNumber(String.valueOf(count));
-                    addPlayerNode(player, count - 1);
-                    printIndex();
+                    addPlayerNode(player, count - 1,true);
+                    //printIndex();
                 }
             }
         });
 
+        loadDataBase();
 
+
+    }
+
+    protected void loadDataBase(){
+        pause("LOADING DATABASE");
+        List<Player> players = db.getAllPlayers();
+        List<PitchingStats> psList = db.getAllPS();
+        List<BattingStats> bsList = db.getAllBS();
+        System.out.println("PLAYER COUNT IS: "+db.getPlayerCount());
+        for (int i = 0; i< db.getPlayerCount()-1; i++){
+            System.out.println("I: "+i);
+            Player newPlayer = players.get(i);
+            newPlayer.pitchingStats = psList.get(i);
+            newPlayer.battingStats = bsList.get(i);
+            int[] id = {index_id + count, first_id + count, last_id + count, number_id + count, edit_id + count, remove_id + count, row_id + count};
+            String[] msg = {String.valueOf(count + 1), newPlayer.getFirstName(), newPlayer.getLastName(), newPlayer.getPlayerNumber()};
+            addTableRow(id, msg);
+            count++;
+            addPlayerNode(newPlayer, count - 1, false);
+            //printIndex();
+        }
     }
 
     protected void loadTable(){
@@ -144,31 +166,22 @@ public class Roster extends StartingWindow {
         switch (requestCode){
             case REQUEST_CODE_GETMESSAGE_PLAYERINFO:
                 if (isEdit){
-                    System.out.println("RUNNING ISEDIT");
                     final Intent d = data;
                     String[] result = PlayerInfo.getResultKeyMessage(data);
                     int[] ids = {first_id,last_id,number_id};
                     int ref = Integer.valueOf(result[3])-1;
                     for (int i = 0;i<ids.length;i++){
-                        System.out.println(i+" i YEET --------------");
                         TextView lblTmp = (TextView) findViewById(ids[i]+ref);
-                        System.out.println((ids[i]+ref)+" THIS IS THE ID OF THE LBLTMP -----------------");
                         lblTmp.setText(result[i].toString());
                     }
 
                     PlayerNode tmp = getHead();
-                    System.out.println(tmp.data.getFirstName());
-                    System.out.println(tmp.data.getLastName());
-                    System.out.println(tmp.data.getPlayerNumber());
                     if (tmp.index == ref){
                         tmp.data.setFirstName(result[0]);
                         tmp.data.setLastName(result[1]);
                         tmp.data.setPlayerNumber(result[2]);
                     }
                     else if(tmp.next != null) {
-                        System.out.println(tmp.next.index+" tmp.next.index");
-                        System.out.println(tmp.index + " tmp.index");
-                        System.out.println(ref+ "ref");
 
                         while (tmp.next.index != ref) {
                             tmp = tmp.next;
@@ -212,7 +225,7 @@ public class Roster extends StartingWindow {
                     player.setFirstName(result[0]);
                     player.setLastName(result[1]);
                     player.setPlayerNumber(result[2]);
-                    addPlayerNode(player,count-1);
+                    addPlayerNode(player,count-1,true);
 
 
                 }
@@ -250,7 +263,7 @@ public class Roster extends StartingWindow {
             public void onClick(View v) {
                 int i = removePlayer(v);
                 removePlayerNode(i);
-                printIndex();
+                //printIndex();
             }
         });
         btnEdit.setOnClickListener(new View.OnClickListener() {
@@ -316,29 +329,26 @@ public class Roster extends StartingWindow {
         startActivityForResult(i, REQUEST_CODE_GETMESSAGE_PLAYERINFO);
     }
 
-    protected void addPlayerNode(Player player, int index){
+    protected void addPlayerNode(Player player, int index, boolean inDataBase){
         PlayerNode newPlayer = new PlayerNode();
         newPlayer.data = player;
         newPlayer.team = "Bearcats";
-        System.out.println(index+ " IS THE INDEX FOR THE NEW PLAYERNODE");
         newPlayer.index = index;
-        System.out.println(newPlayer.index + " IS THE INDEX OF THE NEW PLAYER");
         PlayerNode tmp32 = newPlayer;
-        System.out.println(tmp32.index + " IS THE INDEX OF COPY NEWPLAYER");
         if (getHead() == null){
             setHead(newPlayer);
             db.addPlayer(newPlayer.data);
-            System.out.println(getHead().index+ " THIS IS THE INDEX OF THE HEAD NODE");
         }else{
             PlayerNode tmp = getHead();
             while(tmp.next != null){
                 tmp = tmp.next;
             }
             tmp.next = newPlayer;
-            db.addPlayer(newPlayer.data);
-            System.out.println(tmp.next.index + " THIS IS THE INDEX OF "+tmp.next.data.getFirstName());
+            if (inDataBase) {
+                db.addPlayer(newPlayer.data);
+            }
         }
-        printIndex();
+        //printIndex();
     }
 
     protected void printIndex(){
@@ -355,11 +365,12 @@ public class Roster extends StartingWindow {
     }
 
     protected void removePlayerNode(int index){
-        printIndex();
+        //printIndex();
         PlayerNode tmp = getHead();
 
         //If deleting at head
         if (tmp.index == index){
+            db.deletePlayer(tmp.data);
             if (tmp.next == null){
                 setHead(null);
             }else{
@@ -376,6 +387,7 @@ public class Roster extends StartingWindow {
                 System.out.println("IN WHILE LOOP: "+tmp.next.index);
                     tmp = tmp.next;
                 }
+            db.deletePlayer(tmp.next.data);
             if (tmp.next.next == null){
                 tmp.next = null;
             }else {

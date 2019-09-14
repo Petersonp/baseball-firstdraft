@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.w3c.dom.Node;
+
 import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
@@ -126,6 +128,7 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //printBatters();
                 totString();
+
             }
         });
         //views
@@ -278,10 +281,7 @@ public class GameActivity extends AppCompatActivity {
 
 
         //load database
-        deleteDatabase();
-        printDatabase();
-        loadDatabase();
-        printDatabase();
+        //loadDatabase();
 
         //Substitute players
         btnPitcher.setOnClickListener(new View.OnClickListener() {
@@ -357,6 +357,33 @@ public class GameActivity extends AppCompatActivity {
     // database work
     private void loadDatabase(){
         pause("LOADING DATABASE");
+        List<Player> players = db.getAllPlayers();
+        PlayerNode tmp;
+        int count = 0;
+        if (db.getPlayerCount() > 0){
+            PlayerNode newNode = new PlayerNode();
+            newNode.data = players.get(0);
+            newNode.team = "Bearcats";
+            newNode.index = 0;
+            setHead(newNode);
+            tmp = getHead();
+            for (Player player: players){
+                if (count != 0){
+                    PlayerNode newNode1 = new PlayerNode();
+                    newNode1.data = player;
+                    newNode1.team = "Bearcats";
+                    newNode1.index = count;
+                    tmp.next = newNode1;
+                    tmp = tmp.next;
+                }
+                count++;
+
+            }
+        }
+
+
+
+        /*
         PlayerNode tmp;
         if (db.getPlayerCount()>0){
             System.out.println("PLAYERCOUNT IS GREATER THAN 0");
@@ -377,28 +404,26 @@ public class GameActivity extends AppCompatActivity {
                 tmp = tmp.next;
 
             }
-        }
+        }*/
 
     }
 
     private void printDatabase(){
         pause("PRINTING DATABSE");
         //
-        Player[] players = db.getPlayerArray();
-        System.out.println("players.length = "+players.length);
-        for (int i = 0; i < db.getPlayerCount();i++){
-            System.out.println(i);
-            String log = "Id: " + players[i].getId() + " ,First Name: " + players[i].getFirstName() + " ,Last Name: " +
-                    players[i].getLastName() + " ,Player Number: " + players[i].getPlayerNumber();
+        List<Player> players = db.getAllPlayers();
+        System.out.println("Player count is: "+ db.getPlayerCount());
+        for (Player player: players){
+            String log = "Id: " + player.getId() + " ,Name: " + player.getFirstName()+ " " + player.getLastName() + " ,Number: " +
+                    player.getPlayerNumber();
             System.out.println(log);
         }
-        List<Player> players1 = db.getAllPlayers();
-        System.out.println("players1.size = "+players1.size());
-        for (Player player: players1){
-            String log = "Id: " + player.getId() + " ,First Name: " + player.getFirstName() + " ,Last Name: " +
-                    player.getLastName() + " ,Player Number: " + player.getPlayerNumber();
+        List<PitchingStats> psList = db.getAllPS();
+        for (PitchingStats ps: psList){
+            String log = "PIT: "+ ps.getPIT();
             System.out.println(log);
         }
+
     }
 
     private void deleteDatabase(){
@@ -406,6 +431,19 @@ public class GameActivity extends AppCompatActivity {
 
         for (Player player: players){
             db.deletePlayer(player);
+        }
+    }
+
+    private void updateDatabase(){
+        pause("UPDATING DATABASE");
+        deleteDatabase();
+        PlayerNode tmp = getHead();
+        db.addPlayer(tmp.data);
+        printDatabase();
+        while (tmp.next != null){
+            printDatabase();
+            db.addPlayer(tmp.next.data);
+            tmp = tmp.next;
         }
     }
      //
@@ -490,8 +528,10 @@ public class GameActivity extends AppCompatActivity {
         pause("GETTING LENGTH");
         int count = 0;
         PlayerNode tmp = head;
+        PlayerNode first = tmp;
+        System.out.println("HEAD = "+tmp.data.getFirstName()+" "+tmp.data.getLastName());
         count++;
-        while(tmp.next!= null){
+        while(tmp.next != null){
             System.out.println("HEAD.NEXT = "+tmp.next.data.getFirstName()+" "+tmp.next.data.getLastName());
             count++;
             System.out.println(count);
@@ -505,24 +545,42 @@ public class GameActivity extends AppCompatActivity {
         pause("NEW GAME");
         Game g = new Game();
         g.setStrikes(strikes);
-        System.out.println("STRIKES: "+ g.getStrikes());
         g.setBalls(balls);
-        System.out.println("BALLS: "+ g.getBalls());
         g.setOuts(outs);
-        System.out.println("OUTS: "+ g.getOuts());
         g.setInning(inning);
-        System.out.println("INNINGS: "+ g.getInning());
+
+        String[][] statsArray = new String[getLength(getHead())][18];
+        PlayerNode tmp = getHead();
+        for (int i =0; i<getLength(getHead());i++){
+            PitchingStats ps = tmp.data.pitchingStats;
+            BattingStats bs = tmp.data.battingStats;
+            String[] stats = {ps.getBH(),ps.getBHR(),ps.getBAB(),ps.getBK(),ps.getBSF(),ps.getGB(),ps.getPIT(),ps.getFB(),ps.getBB(),ps.getS(),ps.getC(),
+                    bs.getHits(),bs.getAB(),bs.getBB(),bs.getHBP(),bs.getK(),bs.getTB(),bs.getSF()};
+            for (int j = 0; j < 18; j++) {
+                statsArray[i][j] = stats[j];
+            }
+            if (tmp.next == null) {
+                break;
+            }
+            tmp = tmp.next;
+        }
+        g.setStats(statsArray);
+
 
         PlayerNode[] roster = new PlayerNode[getLength(getHead())];
+
         int count = 0;
-        PlayerNode tmp = getHead();
-        roster[count] = tmp;
-        while(tmp.next != null){
+        PlayerNode tmp1 = getHead();
+        roster[count] = tmp1;
+        System.out.println("PSLIST[COUNT] = "+ tmp1.data.pitchingStats.getPIT());
+        while(tmp1.next != null){
             count++;
-            roster[count] = tmp.next;
-            tmp = tmp.next;
-            System.out.println(count);
+            roster[count] = tmp1.next;
+
+            tmp1 = tmp1.next;
         }
+        g.setRosterArray(roster);
+        /*
         PlayerNode[] lineup = new PlayerNode[getLength(getStarter())];
         count = 0;
         tmp = getStarter();
@@ -531,12 +589,14 @@ public class GameActivity extends AppCompatActivity {
             count++;
             lineup[count] = tmp.next;
             tmp = tmp.next;
-            System.out.println(count);
         }
         PlayerNode[] otherLineup = new PlayerNode[getLength(getOtherHead())];
+        g.setRosterArray(roster);
+        g.setLineupArray(lineup);
+        */
 
-        g.setRoster(getHead());
         g.setLineup(getStarter());
+
         g.setOtherLineup(getOtherHead());
 
         g.setBatter(batter.data);
@@ -544,31 +604,6 @@ public class GameActivity extends AppCompatActivity {
         g.setFbRunner(fbRunner.data);
         g.setSbRunner(sbRunner.data);
         g.setTbRunner(tbRunner.data);
-        /*
-        if(g.getFbRunner().data == null){
-            System.out.println("FBRUNNER IS NULL");
-        }
-        if (g.getFbRunner().data != null){
-            System.out.println("FBRUNNER: "+ g.getFbRunner().data.getFirstName()+" "+fbRunner.data.data.getLastName());
-        }else{
-            g.getFbRunner().data = null;
-            System.out.println("FBRUNNER IS EMPTY");
-        }
-        g.setSbRunner(sbRunner.data);
-        if (g.getSbRunner().data != null){
-            System.out.println("SBRUNNER: "+ g.getSbRunner().data.getFirstName()+" "+sbRunner.data.data.getLastName());
-        }else{
-            g.getSbRunner().data = null;
-            System.out.println("SBRUNNER IS EMPTY");
-        }
-        g.setTbRunner(tbRunner.data);
-        if (g.getTbRunner().data != null){
-            System.out.println("TBRUNNER: "+ g.getTbRunner().data.getFirstName()+" "+tbRunner.data.data.getLastName());
-        }else{
-            g.getTbRunner().data = null;
-            System.out.println("TBRUNNER IS EMPTY");
-        }
-        */
         g.setPitcher(pitcher);
         g.setCatcher(catcher);
         g.setFirstBase(firstBase);
@@ -581,46 +616,116 @@ public class GameActivity extends AppCompatActivity {
 
         return g;
     }
+    protected void createLineUp(){
+        pause("CREATING LINE UP");
+        int lineUpCount = 1;
+        PlayerNode tmp1 = getStarter();
+        System.out.println("COMPARING LINEUPCOUNT: "+lineUpCount+" TO 9");
+        while (lineUpCount <= 9) {
+            PlayerNode tmp = getHead();
+            System.out.println("COMPARING TMP.ORDER: "+tmp.order+" TO LINEUPCOUNT: "+lineUpCount);
+            while (tmp.order != lineUpCount) {
+                System.out.println("THIS IS TMP BEFORE: "+tmp.data.getFirstName()+" "+tmp.data.getLastName()+" ORDER:"+tmp.order);
+                tmp = tmp.next;
+                System.out.println("THIS IS TMP AFTER: "+tmp.data.getFirstName()+" "+tmp.data.getLastName()+" ORDER:"+tmp.order);
+            }
+            lineUpCount++;
+            if (getStarter() == null) {
+                setStarter(tmp);
+                tmp1 = getStarter();
+            } else {
+
+                tmp1.next = tmp;
+                tmp1 = tmp1.next;
+
+            }
+        }
+
+    }
 
     protected void setGame(Game g){
-        System.out.println("OLD STRIKES: "+strikes);
+        pause("SETTING GAME");
         this.strikes = g.getStrikes();
-        System.out.println("NEW STRIKES: "+strikes);
-        System.out.println("OLD BALLS: "+balls);
         balls = g.getBalls();
-        System.out.println("NEW BALLS: "+strikes);
-        System.out.println("OLD OUTS: "+balls);
         outs = g.getOuts();
-        System.out.println("NEW OUTS: "+strikes);
-        System.out.println("OLD INNING: "+inning);
         inning = g.getInning();
-        System.out.println("NEW INNING: "+strikes);
 
-        setHead(g.getRoster());
-        setStarter(g.getLineup());
+
+
+        PlayerNode[] rosterArray = g.getRosterArray();
+        PlayerNode newNode = new PlayerNode();
+        newNode = rosterArray[0];
+        String[][] statsArray = g.getStats();
+        String[] stats1 = statsArray[0];
+        PitchingStats ps1 = new PitchingStats();
+        BattingStats bs1 = new BattingStats();
+        ps1.setBH(Integer.parseInt(stats1[0]));
+        ps1.setBHR(Integer.parseInt(stats1[1]));
+        ps1.setBAB(Integer.parseInt(stats1[2]));
+        ps1.setBK(Integer.parseInt(stats1[3]));
+        ps1.setBSF(Integer.parseInt(stats1[4]));
+        ps1.setGB(Integer.parseInt(stats1[5]));
+        ps1.setPIT(Integer.parseInt(stats1[6]));
+        System.out.println("SETTING PIT TO "+stats1[6]);
+        ps1.setFB(Integer.parseInt(stats1[7]));
+        ps1.setBB(Integer.parseInt(stats1[8]));
+        ps1.setS(Integer.parseInt(stats1[9]));
+        ps1.setC(Integer.parseInt(stats1[10]));
+
+        bs1.setHits(Integer.parseInt(stats1[11]));
+        bs1.setAB(Integer.parseInt(stats1[12]));
+        bs1.setBB(Integer.parseInt(stats1[13]));
+        bs1.setHBP(Integer.parseInt(stats1[14]));
+        bs1.setK(Integer.parseInt(stats1[15]));
+        bs1.setTB(Integer.parseInt(stats1[16]));
+        bs1.setSF(Integer.parseInt(stats1[17]));
+        newNode.data.pitchingStats = ps1;
+        newNode.data.battingStats = bs1;
+        setHead(newNode);
+        PlayerNode rtmp = getHead();
+
+        for (int i=1; i < rosterArray.length-1;i++){
+            String[] stats = statsArray[i];
+            PitchingStats ps = new PitchingStats();
+            BattingStats bs = new BattingStats();
+            ps.setBH(Integer.parseInt(stats[0]));
+            ps.setBHR(Integer.parseInt(stats[1]));
+            ps.setBAB(Integer.parseInt(stats[2]));
+            ps.setBK(Integer.parseInt(stats[3]));
+            ps.setBSF(Integer.parseInt(stats[4]));
+            ps.setGB(Integer.parseInt(stats[5]));
+            ps.setPIT(Integer.parseInt(stats[6]));
+            System.out.println("SETTING PIT TO "+stats[6]);
+            ps.setFB(Integer.parseInt(stats[7]));
+            ps.setBB(Integer.parseInt(stats[8]));
+            ps.setS(Integer.parseInt(stats[9]));
+            ps.setC(Integer.parseInt(stats[10]));
+
+            bs.setHits(Integer.parseInt(stats[11]));
+            bs.setAB(Integer.parseInt(stats[12]));
+            bs.setBB(Integer.parseInt(stats[13]));
+            bs.setHBP(Integer.parseInt(stats[14]));
+            bs.setK(Integer.parseInt(stats[15]));
+            bs.setTB(Integer.parseInt(stats[16]));
+            bs.setSF(Integer.parseInt(stats[17]));
+            rtmp.next = rosterArray[i];
+            rtmp.next.data.pitchingStats = ps;
+            rtmp.next.data.battingStats = bs;
+            System.out.println(rosterArray[i].data.pitchingStats.getPIT());
+            System.out.println(rtmp.data.getFirstName()+" "+rtmp.data.getLastName()+".next = "+rosterArray[i].data.getFirstName()+" "+rosterArray[i].data.getLastName());
+            rtmp = rtmp.next;
+        }
+        System.out.println("HEAD: "+getHead().data.getFirstName()+".next = "+getHead().next.data.getFirstName());
+
+
         setOtherHead(g.getOtherLineup());
+        setStarter(g.getLineup());
 
         batter.data = g.getBatter();
         onDeck.data = g.getOnDeck();
-        System.out.println("BATTER: "+batter.data.data.getFirstName()+" "+batter.data.data.getLastName());
         fbRunner.data = g.getFbRunner();
-        if (fbRunner.data != null) {
-            System.out.println("FBRUNNER: " + fbRunner.data.data.getFirstName() + " " + fbRunner.data.data.getLastName());
-        }else{
-            System.out.println("FBRUNNER NULL");
-        }
         sbRunner.data = g.getSbRunner();
-        if (sbRunner.data != null) {
-            System.out.println("SBRUNNER: " + sbRunner.data.data.getFirstName() + " " + sbRunner.data.data.getLastName());
-        }else{
-            System.out.println("SBRUNNER NULL");
-        }
         tbRunner.data = g.getTbRunner();
-        if (tbRunner.data != null) {
-            System.out.println("TBRUNNER: " + tbRunner.data.data.getFirstName() + " " + tbRunner.data.data.getLastName());
-        }else {
-            System.out.println("TBRUNNER NULL");
-        }
 
         pitcher = g.getPitcher();
         catcher = g.getCatcher();
@@ -638,6 +743,7 @@ public class GameActivity extends AppCompatActivity {
         //loadBattingPositionNodes(getOtherHead());
         updateGameInfo();
         updateRunners();
+        updateDatabase();
 
 
     }
@@ -926,13 +1032,13 @@ public class GameActivity extends AppCompatActivity {
         if (isHome = true){
             isHome = false;
             loadFieldingPositionNodes(getOtherHead());
-            printPositionNodes();
+            //printPositionNodes();
             loadFieldingButtons();
             loadBattingPositionNodes(getStarter());
         }else{
             isHome = true;
             loadFieldingPositionNodes(getStarter());
-            printPositionNodes();
+            //printPositionNodes();
             loadFieldingButtons();
             loadBattingPositionNodes(getOtherHead());
         }
@@ -1024,6 +1130,7 @@ public class GameActivity extends AppCompatActivity {
                 switch (result[0]){
                     case ("Out"):
                         System.out.println("OUT IS THE RESULT");
+                        pitcher.data.pitchingStats.addS();
                         outs++;
                         break;
                     case ("Single"):
@@ -1035,6 +1142,7 @@ public class GameActivity extends AppCompatActivity {
                         batter.data.data.battingStats.addTB(1);
                         pitcher.data.pitchingStats.addBHR();
                         pitcher.data.pitchingStats.addBH();
+                        pitcher.data.pitchingStats.addS();
                         moveBatter(1);
                         break;
                     case ("Double"):
@@ -1045,6 +1153,7 @@ public class GameActivity extends AppCompatActivity {
                         batter.data.data.battingStats.addTB(2);
                         pitcher.data.pitchingStats.addBHR();
                         pitcher.data.pitchingStats.addBH();
+                        pitcher.data.pitchingStats.addS();
                         moveBatter(2);
                         break;
                     case ("Triple"):
@@ -1055,6 +1164,7 @@ public class GameActivity extends AppCompatActivity {
                         batter.data.data.battingStats.addTB(3);
                         pitcher.data.pitchingStats.addBHR();
                         pitcher.data.pitchingStats.addBH();
+                        pitcher.data.pitchingStats.addS();
                         moveBatter(3);
                         break;
                     case ("In-The-Park Home Run"):
@@ -1066,6 +1176,7 @@ public class GameActivity extends AppCompatActivity {
                         batter.data.data.battingStats.addTB(4);
                         pitcher.data.pitchingStats.addBHR();
                         pitcher.data.pitchingStats.addBH();
+                        pitcher.data.pitchingStats.addS();
                         moveBatter(4);
                         break;
                     case ("Home Run"):
@@ -1077,6 +1188,7 @@ public class GameActivity extends AppCompatActivity {
                         batter.data.data.battingStats.addTB(4);
                         pitcher.data.pitchingStats.addBHR();
                         pitcher.data.pitchingStats.addBH();
+                        pitcher.data.pitchingStats.addS();
                         moveBatter(4);
                     case ("Strike"):
                         System.out.println("STRIKE IS THE RESULT");
@@ -1122,6 +1234,8 @@ public class GameActivity extends AppCompatActivity {
 
                 checkGameInfo();
                 updateGameInfo();
+                deleteDatabase();
+                updateDatabase();
 
             }
         }else if (requestCode == REQUEST_CODE_GETMESSAGE_STARTINGWINDOW){
@@ -1132,31 +1246,27 @@ public class GameActivity extends AppCompatActivity {
                     switch (result) {
                         case ("Home"):
                             loadFieldingPositionNodes(getStarter());
-                            printPositionNodes();
+                            //printPositionNodes();
                             loadFieldingButtons();
                             loadBattingPositionNodes(getOtherHead());
                             break;
                         case ("Away"):
                             loadFieldingPositionNodes(getOtherHead());
-                            printPositionNodes();
+                            //printPositionNodes();
                             loadFieldingButtons();
                             loadBattingPositionNodes(getStarter());
                             break;
                     }
 
                 }else{
-                    System.out.println("DOING ELSE");
-                    System.out.println(isHome+" IS ISHOME");
                     if (isHome){
-                        System.out.println("STARTING TEAM IS HOME");
                         loadFieldingPositionNodes(getStarter());
-                        printPositionNodes();
+                        //printPositionNodes();
                         loadFieldingButtons();
                         loadBattingPositionNodes(getOtherHead());
                     }else{
-                        System.out.println("STARTING TEAM IS AWAY");
                         loadFieldingPositionNodes(getOtherHead());
-                        printPositionNodes();
+                        //printPositionNodes();
                         loadFieldingButtons();
                         loadBattingPositionNodes(getStarter());
                     }
@@ -1166,14 +1276,12 @@ public class GameActivity extends AppCompatActivity {
             }
         }else if (requestCode == REQUEST_CODE_SUBPLAYER){
             if (resultCode == Activity.RESULT_OK){
-                System.out.println("RESULT IS OK");
                 String[] result = SubPlayer.getResultKeyMessage(data);
                 switchPlayer(result[0],result[1],result[2],result[3],result[4],result[5]);
                 printLineUp();
                 loadFieldingPositionNodes(getStarter());
                 printPositionNodes();
                 loadFieldingButtons();
-                System.out.println("final one v");
                 printLineUp();
                 printRoster();
             }else{
@@ -1182,7 +1290,6 @@ public class GameActivity extends AppCompatActivity {
         }else if (requestCode == REQUEST_CODE_RUNNER){
             if (resultCode == Activity.RESULT_OK){
                 String[] result = Runner.getResultKeyMessage(data);
-                System.out.println(result[0]+" "+result[1]+" IS THE RESULT --------------------------------------------------------------------");
                 BatterNode tmp = new BatterNode();
                 switch (result[0]){
                     case ("1"):
@@ -1200,13 +1307,11 @@ public class GameActivity extends AppCompatActivity {
                 }
                 switch (result[1]){
                     case ("Out"):
-                        System.out.println(tmp.data.data.getFirstName()+" "+tmp.data.data.getLastName()+" IS THE RUNNER IN OUT");
                         outs++;
                         tmp.data = null;
                         tmp.btn.setText("--");
                         break;
                     case ("Safe"):
-                        System.out.println(tmp.data.data.getFirstName()+" "+tmp.data.data.getLastName()+" IS THE RUNNER IN SAFE");
                         tmp.data.data.runningStats.addSA();
                         tmp.data.data.runningStats.addSS();
                         if (tmp != tbRunner) {
@@ -1221,7 +1326,6 @@ public class GameActivity extends AppCompatActivity {
                         tmp.btn.setText("--");
                         break;
                     case ("SOut"):
-                        System.out.println(tmp.data.data.getFirstName()+" "+tmp.data.data.getLastName()+" IS THE RUNNER IN SOUT");
                         tmp.data.data.runningStats.addSA();
                         tmp.data = null;
                         tmp.btn.setText("--");
@@ -1261,12 +1365,10 @@ public class GameActivity extends AppCompatActivity {
                     }
                     tmp.btn.setText("--");
                 }else if (result[1].equals("SOut")){
-                    System.out.println(tmp.data.data.getFirstName()+" "+tmp.data.data.getLastName()+" IS THE RUNNER IN SOUT");
                     tmp.data.data.runningStats.addSA();
                     tmp.data = null;
                     tmp.btn.setText("--");
                 }else{
-                    System.out.println("SECOND IF BUT NO MATCH");
                 }
             checkGameInfo();
             updateGameInfo();
@@ -1277,14 +1379,10 @@ public class GameActivity extends AppCompatActivity {
 
     protected void switchPlayer(String fn, String ln, String no, String ofn, String oln, String ono){
         pause("SWITCHING PLAYERS");
-        System.out.println("PLAYER 1 IS: "+fn+ln+no);
-        System.out.println("PLAYER 2 IS: "+ofn+oln+ono);
         printLineUp();
         PlayerNode tmp = getStarter();
         PlayerNode newPlayer = findPlayer(ofn,oln,ono);
         if (newPlayer.isChecked) {
-            System.out.println("NEW PLAYER IS CHECKED");
-            System.out.println("Comparing: "+fn+ln+no+": to: "+tmp.data.getFirstName()+tmp.data.getLastName()+tmp.data.getPlayerNumber());
             if (fn.equals(tmp.data.getFirstName()) && ln.equals(tmp.data.getLastName()) && no.equals(tmp.data.getPlayerNumber())) {
                 int tmpOrder = newPlayer.order;
                 newPlayer.order = tmp.order;
@@ -1299,7 +1397,6 @@ public class GameActivity extends AppCompatActivity {
                 */
             } else {
                 while (tmp.next != null) {
-                    System.out.println("Comparing: "+fn+ln+no+": to: "+tmp.next.data.getFirstName()+tmp.next.data.getLastName()+tmp.next.positon);
                     if (fn.equals(tmp.next.data.getFirstName()) && ln.equals(tmp.next.data.getLastName()) && no.equals(tmp.next.positon)) {
                         pause("FOUND^");
                         int tmpOrder = newPlayer.order;
@@ -1332,29 +1429,23 @@ public class GameActivity extends AppCompatActivity {
                 setStarter(newPlayer);
             } else {
                 while (tmp.next != null) {
-                    System.out.println("Comparing: "+fn+ln+no+": to: "+tmp.next.data.getFirstName()+tmp.next.data.getLastName()+tmp.next.positon+" 4");
                     if (fn.equals(tmp.next.data.getFirstName()) && ln.equals(tmp.next.data.getLastName()) && no.equals(tmp.next.positon)) {
                         pause("FOUND^");
                         PlayerNode tmp2 = getStarter();
                         while (!(tmp2.next.data.getFirstName().equals(ofn))){
                             tmp2 = tmp2.next;
                         }
-                        System.out.println(tmp2.next.data.getFirstName()+" = "+ofn);
                         PlayerNode tmp1 = tmp2.next.next;
                         tmp2.next = tmp.next;
                         newPlayer.positon = tmp.next.positon;
-                        System.out.println("New player position = "+newPlayer.positon);
                         newPlayer.order = tmp.next.order;
-                        System.out.println("New player order = "+newPlayer.order);
                         newPlayer.isChecked = true;
                         tmp.next.isChecked = false;
                         tmp.next.positon = null;
                         tmp.next.order = 0;
-                        System.out.println("newPlayer.next = "+tmp.next.next.data.getFirstName()+tmp.next.next.data.getLastName());
                         newPlayer.next = tmp.next.next;
                         tmp.next = newPlayer;
                         tmp2.next.next =tmp1;
-                        System.out.println("tmp.next ="+tmp.next.data.getFirstName()+tmp.next.data.getLastName());
                         break;
                     }
                     tmp = tmp.next;
@@ -1389,7 +1480,6 @@ public class GameActivity extends AppCompatActivity {
             batter.data = head.designatedHitter;
         }
         batter.data.data.battingStats.addAB();
-        System.out.println("ADDING AN AT BAT TO: "+batter.data.data.getFirstName());
         batter.btn.setText(batter.data.data.getFirstName()+" "+batter.data.data.getLastName());
         if (head.next.designatedHitter == null){
             onDeck.data = head.next;

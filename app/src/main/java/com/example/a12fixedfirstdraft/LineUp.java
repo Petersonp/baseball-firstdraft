@@ -93,6 +93,7 @@ public class LineUp extends GameActivity {
             @Override
             public void onClick(View v) {
                 printOrder();
+                printIndex();
             }
         });
 
@@ -133,13 +134,16 @@ public class LineUp extends GameActivity {
     }
 
     protected void createLineUp(){
+        pause("CREATING LINE UP");
         int lineUpCount = 1;
         PlayerNode tmp1 = getStarter();
         while (lineUpCount <= 9) {
             PlayerNode tmp = getHead();
-
+            System.out.println("THIS IS HEAD: "+ tmp.data.getFirstName()+" "+tmp.data.getLastName()+" ORDER:"+tmp.order);
             while (tmp.order != lineUpCount) {
+                System.out.println("THIS IS TMP BEFORE: "+tmp.data.getFirstName()+" "+tmp.data.getLastName()+" ORDER:"+tmp.order);
                 tmp = tmp.next;
+                System.out.println("THIS IS TMP AFTER: "+tmp.data.getFirstName()+" "+tmp.data.getLastName()+" ORDER:"+tmp.order);
             }
             System.out.println("THE ORDER OF: " + tmp.data.getFirstName() + ": " + tmp.order + " IS EQUAL TO " + lineUpCount);
             lineUpCount++;
@@ -210,9 +214,9 @@ public class LineUp extends GameActivity {
         if(getHead() != null) {
             System.out.println("PRINGINT INDEXES");
             PlayerNode tmp = getHead();
-            System.out.println(tmp.data.getFirstName() + ": " + tmp.index+": "+ tmp.order+": "+tmp.positon);
+            System.out.println(tmp.data.getFirstName() + " index: " + tmp.index+" order: "+ tmp.order+" position: "+tmp.positon);
             while (tmp.next != null) {
-                System.out.println(tmp.next.data.getFirstName() + ": " + tmp.next.index+": "+tmp.next.order+": "+tmp.next.positon);
+                System.out.println(tmp.next.data.getFirstName() + " index: " + tmp.next.index+" order: "+tmp.next.order+" position: "+tmp.next.positon);
                 tmp = tmp.next;
 
             }
@@ -385,6 +389,7 @@ public class LineUp extends GameActivity {
                 }
                 System.out.println(spnIndex.getItemAtPosition(position).toString() + " IS THE INDEX FOR: "+ tmp.data.getFirstName());
                 tmp.order = Integer.valueOf(spnIndex.getItemAtPosition(position).toString());
+                System.out.println("SETTING THE ORDER OF: "+tmp.data.getFirstName()+" "+ tmp.data.getLastName()+" TO:"+Integer.valueOf(spnIndex.getItemAtPosition(position).toString())+" "+tmp.order);
                 System.out.println(tmp.order);
 
 

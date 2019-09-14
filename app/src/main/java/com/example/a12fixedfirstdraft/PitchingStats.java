@@ -22,57 +22,57 @@ public class PitchingStats {
 
     // hits
     public void addBH(){
-        BH++;
+        setBH(BH + 1);
     }
 
     // home runs
     public void addBHR(){
-        BHR++;
+        setBHR(BHR + 1);
     }
 
     // at bats
     public void addBAB(){
-        BAB++;
+        setBAB(BAB + 1);
     }
 
     // strikeouts
     public void addBK(){
-        BK++;
+        setBK(BK + 1);
     }
 
     // Sac flies
     public void addBSF(){
-        BSF++;
+        setBSF(BSF + 1);
     }
 
     // ground balls
     public void addGB(){
-        GB++;
+        setGB(GB + 1);
     }
 
     //pitch count
     public void addPIT(){
-        PIT++;
+        setPIT(PIT + 1);
     }
 
     // fly balls
     public void addFB(){
-        FB++;
+        setFB(FB + 1);
     }
 
     // walks
     public void addBB(){
-        BB++;
+        setBB(BB + 1);
     }
 
     // Strikes
     public void addS(){
-        S++;
+        setS(S + 1);
     }
 
     // contact (Including foul ball)
     public void addC(){
-        C++;
+        setC(C + 1);
     }
 
     public String getBABIP() {
@@ -149,12 +149,54 @@ public class PitchingStats {
     }
 
     public String getS() {
-        System.out.println("GETTING S");
         return String.valueOf(S);
     }
 
     public String getC() {
-        System.out.println("GETTING C");
         return String.valueOf(C);
+    }
+
+    public void setBH(int BH) {
+        this.BH = BH;
+    }
+
+    public void setBHR(int BHR) {
+        this.BHR = BHR;
+    }
+
+    public void setBAB(int BAB) {
+        this.BAB = BAB;
+    }
+
+    public void setBK(int BK) {
+        this.BK = BK;
+    }
+
+    public void setBSF(int BSF) {
+        this.BSF = BSF;
+    }
+
+    public void setGB(int GB) {
+        this.GB = GB;
+    }
+
+    public void setPIT(int PIT) {
+        this.PIT = PIT;
+    }
+
+    public void setFB(int FB) {
+        this.FB = FB;
+    }
+
+    public void setBB(int BB) {
+        this.BB = BB;
+    }
+
+    public void setS(int s) {
+        S = s;
+    }
+
+    public void setC(int c) {
+        C = c;
     }
 }
